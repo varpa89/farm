@@ -12,9 +12,9 @@ public class DocumentTablePart {
     @JacksonXmlProperty(isAttribute = true, localName = "NDS")
     private String nds;
     @JacksonXmlProperty(isAttribute = true, localName = "Summa")
-    private BigDecimal sum;
+    private BigDecimal amount;
     @JacksonXmlProperty(isAttribute = true, localName = "SummaNDS")
-    private BigDecimal ndsSum;
+    private BigDecimal ndsAmount;
     @JacksonXmlProperty(isAttribute = true, localName = "Price")
     private BigDecimal price;
     @JacksonXmlProperty(isAttribute = true, localName = "Quantity")

@@ -14,6 +14,7 @@ import ru.varpa89.farm.dto.transportservice.TransportServiceDtoRoot;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,12 +82,33 @@ public class TransportService {
     }
 
     private List<DocumentTablePart> extractDocumentTablePart(Sheet sheet) {
-        final Cell cell = getCell(sheet, PRODUCTS);
-        final Integer lineNumber = parseInteger(cell.getNumericCellValue());
+        int rowIndex = PRODUCTS.getRow();
+        List<DocumentTablePart> documentTableParts = new ArrayList<>();
+        while (sheet.getRow(rowIndex).getCell(0).getCellType().equals(CellType.NUMERIC)) {
 
-        final DocumentTablePart documentTablePart = DocumentTablePart.builder()
-                .line(lineNumber)
-                .build();
-        return List.of(documentTablePart);
+            Row row = sheet.getRow(rowIndex);
+
+            final double lineNumber = row.getCell(0).getNumericCellValue();
+            final double amount = row.getCell(42).getNumericCellValue();
+            final double price = row.getCell(39).getNumericCellValue();
+            final double quantity = row.getCell(36).getNumericCellValue();
+            final String unit = row.getCell(19).getStringCellValue();
+            final String name = row.getCell(3).getStringCellValue();
+
+            final DocumentTablePart documentTablePart = DocumentTablePart.builder()
+                    .amount(parseBigDecimal(amount))
+                    .price(parseBigDecimal(price))
+                    .quantity(parseInteger(quantity))
+                    .unit(unit)
+                    .name(name)
+                    .line(parseInteger(lineNumber))
+                    .build();
+
+            documentTableParts.add(documentTablePart);
+
+            rowIndex++;
+        }
+
+        return documentTableParts;
     }
 }

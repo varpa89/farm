@@ -46,7 +46,7 @@ public class InvoiceController {
                 return ResponseEntity.badRequest()
                         .body("Ошибка");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Can't read file", e);
             return ResponseEntity.badRequest()
                     .body("Ошибка");
