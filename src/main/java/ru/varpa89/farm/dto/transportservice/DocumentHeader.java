@@ -1,17 +1,21 @@
 package ru.varpa89.farm.dto.transportservice;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import lombok.Builder;
+import lombok.Getter;
 
+@Builder
+@Getter
 public class DocumentHeader {
     @JacksonXmlProperty(isAttribute = true, localName = "GLN")
     private Long gln;
     @JacksonXmlProperty(isAttribute = true, localName = "ClientName")
     private String clientName;
     @JacksonXmlProperty(isAttribute = true, localName = "INN")
-    private Long inn;
+    private String inn;
     @JacksonXmlProperty(isAttribute = true, localName = "KPP")
-    private Long kpp;
-    @JacksonXmlProperty(isAttribute = true, localName = "Addrname")
+    private String kpp;
+    @JacksonXmlProperty(isAttribute = true, localName = "AddrName")
     private String addrName;
     @JacksonXmlProperty(isAttribute = true, localName = "Addr")
     private String addr;
