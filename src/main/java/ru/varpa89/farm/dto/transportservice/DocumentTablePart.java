@@ -1,9 +1,13 @@
 package ru.varpa89.farm.dto.transportservice;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
+@Builder
+@Getter
 public class DocumentTablePart {
     @JacksonXmlProperty(isAttribute = true, localName = "NDS")
     private String nds;
