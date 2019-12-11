@@ -3,10 +3,12 @@ package ru.varpa89.farm.dto.transportservice;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class SingleDocument {
