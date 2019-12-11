@@ -41,7 +41,6 @@ public class TransportService {
         log.info("Address parsed: {}", clientInfo);
 
         final DocumentHeader documentHeader = DocumentHeader.builder()
-                .gln(1L) //TODO: GLN = "9" + 6 цифр кода контрагента + 6 цифр кода адреса.
                 .clientName(clientInfo.getName())
                 .kpp(clientInfo.getKpp())
                 .inn(clientInfo.getInn())
