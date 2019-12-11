@@ -1,26 +1,42 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
 <body>
 
-<div th:if="${message}">
-    <h2 th:text="${message}"/>
+<div class="container mt-3">
+    <div class="col-md-6 offset-md-3">
+        <img src="/logo.jpg" class="rounded mx-auto d-block" width="404">
+        <h2>Конвертер товарной накладной</h2>
+        <p>Выберите .xls или .xlsx файл. Нажмите на кнопку "Получить xml-файл" для обработки накладной. После этого
+            начнется скачивание сгенерированного файла</p>
+        <form method="POST" enctype="multipart/form-data" action="/">
+            <p>Выбранный файл:</p>
+            <div class="custom-file mb-3">
+                <input type="file" class="custom-file-input" id="customFile" name="file">
+                <label class="custom-file-label" for="customFile">Выбрать накладную</label>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Получить xml-файл</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div>
-    <form method="POST" enctype="multipart/form-data" action="/">
-        <table>
-            <tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-            <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-        </table>
-    </form>
-</div>
-
-<div>
-    <ul>
-        <li th:each="file : ${files}">
-            <a th:href="${file}" th:text="${file}" />
-        </li>
-    </ul>
-</div>
+<script>
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+</script>
 
 </body>
 </html>
