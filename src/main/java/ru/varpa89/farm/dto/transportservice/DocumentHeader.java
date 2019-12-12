@@ -15,7 +15,7 @@ public class DocumentHeader {
     private String inn;
     @JacksonXmlProperty(isAttribute = true, localName = "KPP")
     private String kpp;
-    @JacksonXmlProperty(isAttribute = true, localName = "AddrName")
+    @JacksonXmlProperty(isAttribute = true, localName = "Addrname")
     private String addrName;
     @JacksonXmlProperty(isAttribute = true, localName = "Addr")
     private String addr;
