@@ -1,5 +1,6 @@
 package ru.varpa89.farm.dto.sellservice;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,6 @@ public class SingleDocument {
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<DocumentTablePart> documentTablePart;
 
+    @JsonIgnore
     private Date invoiceDate;
 }
