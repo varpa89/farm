@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class DocumentHeader {
     @JacksonXmlProperty(isAttribute = true, localName = "GLN")
-    private Long gln;
+    private String gln;
     @JacksonXmlProperty(isAttribute = true, localName = "ClientName")
     private String clientName;
     @JacksonXmlProperty(isAttribute = true, localName = "INN")

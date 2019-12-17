@@ -14,9 +14,7 @@ import ru.varpa89.farm.dto.transportservice.TransportServiceDtoRoot;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -26,6 +24,10 @@ public class TransportService {
     private static final CellAddress INVOICE_DATE = new CellAddress("AC27");
     private static final CellAddress CLIENT_INFO = new CellAddress("H13");
     private static final CellAddress PRODUCTS = new CellAddress("A33");
+    private static final CellAddress ORDER_NR = new CellAddress("BB24");
+    private static final CellAddress ORDER_DATE = new CellAddress("BB25");
+    private static final CellAddress GLN = new CellAddress("BB26");
+    private static final CellAddress ADDRESS = new CellAddress("H22");
 
     private final ClientExtractor clientExtractor;
 
@@ -34,7 +36,7 @@ public class TransportService {
         log.info("Process sheet {}", sheet.getSheetName());
 
         final String invoiceNumber = getStringValue(sheet, INVOICE_NUMBER);
-        final String invoiceDate = getInvoiceDate(sheet);
+        final String invoiceDate = getInvoiceDateIso(sheet);
         final String clientInfoValue = getStringValue(sheet, CLIENT_INFO);
 
         final ClientExtractor.ClientInfo clientInfo = clientExtractor.extractInfo(clientInfoValue);
@@ -44,8 +46,25 @@ public class TransportService {
                 .clientName(clientInfo.getName())
                 .kpp(clientInfo.getKpp())
                 .inn(clientInfo.getInn())
-                .addrName(clientInfo.getAddress())
+                .addrName(getStringValue(sheet, ADDRESS))
+                .numberTs(invoiceNumber)
+                .date(getInvoiceDate(sheet))
+                .typeRn("Продажа")
+                .bonus(0)
+                .promo(0)
+                .firm("Мега Опт")
+                .numberSf("")
+                .orderNr(getStringValue(sheet, ORDER_NR))
+                .orderDate(getStringValue(sheet, ORDER_DATE))
+                .gln(getStringValue(sheet, GLN))
                 .build();
+
+        //firm - мега опт
+        //NumberSF - пусто
+        //OrderNR - форма
+        //OrderDate - форма
+        //GLN - форма
+        //адрес - форма
 
         final List<DocumentTablePart> documentTableParts = extractDocumentTablePart(sheet);
 
@@ -58,9 +77,14 @@ public class TransportService {
         return getCell(sheet, cellAddress).getStringCellValue();
     }
 
-    private String getInvoiceDate(Sheet sheet) {
+    private String getInvoiceDateIso(Sheet sheet) {
         final Date dateCellValue = getCell(sheet, INVOICE_DATE).getDateCellValue();
         return DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("Europe/Moscow")).format(dateCellValue.toInstant());
+    }
+
+    private String getInvoiceDate(Sheet sheet) {
+        final Date dateCellValue = getCell(sheet, INVOICE_DATE).getDateCellValue();
+        return DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Europe/Moscow")).format(dateCellValue.toInstant());
     }
 
     private static BigDecimal parseBigDecimal(double value) {
@@ -81,6 +105,21 @@ public class TransportService {
     }
 
     private List<DocumentTablePart> extractDocumentTablePart(Sheet sheet) {
+        Map<String, Integer> nomenclatureToFactor = new HashMap<>();
+        nomenclatureToFactor.put("00203", 9);
+        nomenclatureToFactor.put("00212", 9);
+        nomenclatureToFactor.put("00211", 9);
+        nomenclatureToFactor.put("00197", 9);
+        nomenclatureToFactor.put("00195", 9);
+        nomenclatureToFactor.put("00204", 9);
+        nomenclatureToFactor.put("00205", 9);
+        nomenclatureToFactor.put("00202", 18);
+        nomenclatureToFactor.put("00201", 18);
+        nomenclatureToFactor.put("00199", 18);
+        nomenclatureToFactor.put("00198", 18);
+        nomenclatureToFactor.put("00196", 18);
+
+
         int rowIndex = PRODUCTS.getRow();
         List<DocumentTablePart> documentTableParts = new ArrayList<>();
         while (sheet.getRow(rowIndex).getCell(0).getCellType().equals(CellType.NUMERIC)) {
@@ -90,9 +129,22 @@ public class TransportService {
             final double lineNumber = row.getCell(0).getNumericCellValue();
             final double amount = row.getCell(42).getNumericCellValue();
             final double price = row.getCell(39).getNumericCellValue();
-            final double quantity = row.getCell(36).getNumericCellValue();
             final String unit = row.getCell(19).getStringCellValue();
             final String name = row.getCell(3).getStringCellValue();
+
+            //nomenclature - код/артикул
+            //plu - пустой
+            //factor - сколько единиц в одной коробке - через артикул
+            //quantity - столбец (10) количество разделить на factor
+            //SummaNDS - 0
+            // NDS - без ндс
+
+            final String nomenclature = row.getCell(16).getStringCellValue();
+            final Integer factor = nomenclatureToFactor.get(nomenclature);
+            if (factor == null) {
+                throw new RuntimeException("Неизвестная номенклатура " + nomenclature);
+            }
+            final int quantity = parseInteger(row.getCell(36).getNumericCellValue())/factor;
 
             final DocumentTablePart documentTablePart = DocumentTablePart.builder()
                     .amount(parseBigDecimal(amount))
@@ -101,6 +153,12 @@ public class TransportService {
                     .unit(unit)
                     .name(name)
                     .line(parseInteger(lineNumber))
+                    .nomenclature(nomenclature)
+                    .plu("")
+                    .factor(factor)
+                    .quantity(quantity)
+                    .nds("Без НДС")
+                    .ndsAmount(BigDecimal.ZERO)
                     .build();
 
             documentTableParts.add(documentTablePart);
