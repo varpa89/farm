@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import ru.varpa89.farm.dto.transportservice.TransportServiceDtoRoot;
-import ru.varpa89.farm.service.TransportService;
+import ru.varpa89.farm.dto.sellservice.SellServiceDtoRoot;
+import ru.varpa89.farm.service.SellService;
 
 import java.io.IOException;
 
@@ -26,7 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class InvoiceController {
     private final XmlMapper xmlMapper;
-    private final TransportService transportService;
+    private final SellService sellService;
 
     @GetMapping("/")
     public String listUploadedFiles() {
@@ -52,7 +52,7 @@ public class InvoiceController {
                     .body("Ошибка");
         }
 
-        final TransportServiceDtoRoot dtoRoot = transportService.readFile(invoice);
+        final SellServiceDtoRoot dtoRoot = sellService.readFile(invoice);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_XML)

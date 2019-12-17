@@ -1,4 +1,4 @@
-package ru.varpa89.farm.dto.transportservice;
+package ru.varpa89.farm.dto.sellservice;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JacksonXmlRootElement(localName = "Документы")
-public class TransportServiceDtoRoot {
+public class SellServiceDtoRoot {
     @JacksonXmlProperty(localName = "ОтдельныйДокумент")
     private SingleDocument singleDocument;
     @JacksonXmlProperty(isAttribute = true, localName = "l")

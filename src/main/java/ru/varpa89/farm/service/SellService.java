@@ -6,10 +6,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.springframework.stereotype.Service;
 import org.springframework.util.NumberUtils;
-import ru.varpa89.farm.dto.transportservice.DocumentHeader;
-import ru.varpa89.farm.dto.transportservice.DocumentTablePart;
-import ru.varpa89.farm.dto.transportservice.SingleDocument;
-import ru.varpa89.farm.dto.transportservice.TransportServiceDtoRoot;
+import ru.varpa89.farm.dto.sellservice.DocumentHeader;
+import ru.varpa89.farm.dto.sellservice.DocumentTablePart;
+import ru.varpa89.farm.dto.sellservice.SingleDocument;
+import ru.varpa89.farm.dto.sellservice.SellServiceDtoRoot;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TransportService {
+public class SellService {
     private static final CellAddress INVOICE_NUMBER = new CellAddress("W27");
     private static final CellAddress INVOICE_DATE = new CellAddress("AC27");
     private static final CellAddress CLIENT_INFO = new CellAddress("H13");
@@ -31,7 +31,7 @@ public class TransportService {
 
     private final ClientExtractor clientExtractor;
 
-    public TransportServiceDtoRoot readFile(Workbook invoice) {
+    public SellServiceDtoRoot readFile(Workbook invoice) {
         final Sheet sheet = invoice.getSheetAt(0);
         log.info("Process sheet {}", sheet.getSheetName());
 
@@ -70,7 +70,7 @@ public class TransportService {
 
         SingleDocument singleDocument = new SingleDocument(invoiceNumber, documentHeader, documentTableParts);
 
-        return new TransportServiceDtoRoot(singleDocument, invoiceDate, invoiceDate);
+        return new SellServiceDtoRoot(singleDocument, invoiceDate, invoiceDate);
     }
 
     private String getStringValue(Sheet sheet, CellAddress cellAddress) {
