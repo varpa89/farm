@@ -9,7 +9,6 @@ import org.springframework.util.NumberUtils;
 import ru.varpa89.farm.dto.sellservice.DocumentHeader;
 import ru.varpa89.farm.dto.sellservice.DocumentTablePart;
 import ru.varpa89.farm.dto.sellservice.SingleDocument;
-import ru.varpa89.farm.dto.sellservice.SellServiceDtoRoot;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -31,12 +30,12 @@ public class SellService {
 
     private final ClientExtractor clientExtractor;
 
-    public SellServiceDtoRoot readFile(Workbook invoice) {
+    public SingleDocument readFile(Workbook invoice) {
         final Sheet sheet = invoice.getSheetAt(0);
         log.info("Process sheet {}", sheet.getSheetName());
 
         final String invoiceNumber = getStringValue(sheet, INVOICE_NUMBER);
-        final String invoiceDate = getInvoiceDateIso(sheet);
+        final Date invoiceDate = getInvoiceDate(sheet);
         final String clientInfoValue = getStringValue(sheet, CLIENT_INFO);
 
         final ClientExtractor.ClientInfo clientInfo = clientExtractor.extractInfo(clientInfoValue);
@@ -48,7 +47,7 @@ public class SellService {
                 .inn(clientInfo.getInn())
                 .addrName(getStringValue(sheet, ADDRESS))
                 .numberTs(invoiceNumber)
-                .date(getInvoiceDate(sheet))
+                .date(getInvoiceFormattedDate(sheet))
                 .typeRn("Продажа")
                 .bonus(0)
                 .promo(0)
@@ -68,21 +67,18 @@ public class SellService {
 
         final List<DocumentTablePart> documentTableParts = extractDocumentTablePart(sheet);
 
-        SingleDocument singleDocument = new SingleDocument(invoiceNumber, documentHeader, documentTableParts);
-
-        return new SellServiceDtoRoot(singleDocument, invoiceDate, invoiceDate);
+        return new SingleDocument(invoiceNumber, documentHeader, documentTableParts, invoiceDate);
     }
 
     private String getStringValue(Sheet sheet, CellAddress cellAddress) {
         return getCell(sheet, cellAddress).getStringCellValue();
     }
 
-    private String getInvoiceDateIso(Sheet sheet) {
-        final Date dateCellValue = getCell(sheet, INVOICE_DATE).getDateCellValue();
-        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("Europe/Moscow")).format(dateCellValue.toInstant());
+    private Date getInvoiceDate(Sheet sheet) {
+        return getCell(sheet, INVOICE_DATE).getDateCellValue();
     }
 
-    private String getInvoiceDate(Sheet sheet) {
+    private String getInvoiceFormattedDate(Sheet sheet) {
         final Date dateCellValue = getCell(sheet, INVOICE_DATE).getDateCellValue();
         return DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Europe/Moscow")).format(dateCellValue.toInstant());
     }
@@ -144,7 +140,7 @@ public class SellService {
             if (factor == null) {
                 throw new RuntimeException("Неизвестная номенклатура " + nomenclature);
             }
-            final int quantity = parseInteger(row.getCell(36).getNumericCellValue())/factor;
+            final int quantity = parseInteger(row.getCell(36).getNumericCellValue()) / factor;
 
             final DocumentTablePart documentTablePart = DocumentTablePart.builder()
                     .amount(parseBigDecimal(amount))

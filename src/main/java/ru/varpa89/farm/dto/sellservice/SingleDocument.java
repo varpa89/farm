@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -19,4 +20,6 @@ public class SingleDocument {
     @JacksonXmlProperty(localName = "ТабличнаяЧастьДокумента")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<DocumentTablePart> documentTablePart;
+
+    private Date invoiceDate;
 }
