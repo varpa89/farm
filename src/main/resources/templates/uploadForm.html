@@ -14,14 +14,27 @@
 <div class="container mt-3">
     <div class="col-md-6 offset-md-3">
         <img src="/logo.jpg" class="rounded mx-auto d-block" width="404">
-        <h2>Конвертер товарной накладной</h2>
-        <p>Выберите .xls или .xlsx файл (можно несколько). Нажмите на кнопку "Получить xml-файл" для обработки накладной. После этого
-            начнется скачивание сгенерированного файла "tov_nakl_{n}_total.xml", где n - число обработанных документов</p>
-        <form method="POST" enctype="multipart/form-data" action="/">
-            <p>Выбранный файл:</p>
-            <div class="custom-file mb-3">
-                <input type="file" class="custom-file-input" id="customFile" name="files[]" multiple/>
-                <label class="custom-file-label" for="customFile">Выбрать накладную</label>
+        <h2>Конвертер накладных продажи и хранения</h2>
+        <small>Выберите .xls или .xlsx файл (можно несколько). Нажмите на кнопку "Получить xml-файл" для обработки файлов. После этого
+            начнется скачивание сгенерированного файла "sell_doc_{n}_total.xml" или "storage_doc_{n}_total.xml", где n - число обработанных документов</small>
+        <hr>
+        <form method="POST" enctype="multipart/form-data" action="/process_sell_document">
+            <p class="font-weight-bold">Файлы накладных продажи:</p>
+            <div class="custom-file mb-1">
+                <input type="file" class="custom-file-input" id="sellFile" name="files[]" multiple/>
+                <label class="custom-file-label" for="sellFile">Выбрать накладную</label>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Получить xml-файл</button>
+            </div>
+        </form>
+        <hr>
+        <form method="POST" enctype="multipart/form-data" action="/process_storage_document">
+            <p class="font-weight-bold">Файлы накладных хранения:</p>
+            <div class="custom-file mb-1">
+                <input type="file" class="custom-file-input" id="storageFile" name="files[]" multiple/>
+                <label class="custom-file-label" for="storageFile">Выбрать накладную</label>
             </div>
 
             <div class="mt-3">
@@ -32,7 +45,15 @@
 </div>
 
 <script>
-    $(".custom-file-input").on("change", function () {
+    $("#sellFile").on("change", function () {
+        var files = [];
+        for (var i = 0; i < $(this)[0].files.length; i++) {
+            files.push($(this)[0].files[i].name);
+        }
+        $(this).next('.custom-file-label').html(files.join(', '));
+    });
+
+    $("#storageFile").on("change", function () {
         var files = [];
         for (var i = 0; i < $(this)[0].files.length; i++) {
             files.push($(this)[0].files[i].name);

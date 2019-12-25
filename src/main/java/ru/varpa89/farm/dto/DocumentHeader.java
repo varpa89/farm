@@ -1,4 +1,4 @@
-package ru.varpa89.farm.dto.sellservice;
+package ru.varpa89.farm.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
