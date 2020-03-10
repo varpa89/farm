@@ -32,7 +32,7 @@ public class StorageService extends AbstractXlsService {
         final DocumentHeader documentHeader = DocumentHeader.builder()
                 .numberTs(invoiceNumber)
                 .date(getInvoiceFormattedDate(sheet, INVOICE_DATE))
-                .typeRn("Постуление")
+                .typeRn("Поступление")
                 .firm("000000010")
                 .clientName("ООО \"Порт-Холод\"")
                 .addrName("Ленинградская обл., Ломоносовский р-н, Разбегаево д., Ропшинское ш., д.3,стр.1")
