@@ -13,7 +13,9 @@ import ru.varpa89.farm.dto.DocumentTablePart;
 import ru.varpa89.farm.dto.SingleDocument;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -72,11 +74,13 @@ public class SellService extends AbstractXlsService {
 
     private List<DocumentTablePart> extractDocumentTablePart(Sheet sheet) {
 
-        int rowIndex = PRODUCTS.getRow();
         List<DocumentTablePart> documentTableParts = new ArrayList<>();
-        while (sheet.getRow(rowIndex).getCell(0).getCellType().equals(CellType.NUMERIC)) {
+        for (int i = PRODUCTS.getRow(); i < sheet.getLastRowNum(); i++) {
+            if (!isProductRow(sheet, i)) {
+                continue;
+            }
 
-            Row row = sheet.getRow(rowIndex);
+            Row row = sheet.getRow(i);
 
             final double lineNumber = row.getCell(0).getNumericCellValue();
             final double amount = row.getCell(42).getNumericCellValue();
@@ -115,9 +119,23 @@ public class SellService extends AbstractXlsService {
 
             documentTableParts.add(documentTablePart);
 
-            rowIndex++;
         }
 
         return documentTableParts;
+    }
+
+    private boolean isProductRow(Sheet sheet, int rowIndex) {
+        final Row row = sheet.getRow(rowIndex);
+
+        return row.getCell(0) != null
+                && row.getCell(42) != null
+                && row.getCell(39) != null
+                && row.getCell(19) != null
+                && row.getCell(3) != null
+                && row.getCell(0).getCellType().equals(CellType.NUMERIC)
+                && row.getCell(42).getCellType().equals(CellType.NUMERIC)
+                && row.getCell(39).getCellType().equals(CellType.NUMERIC)
+                && row.getCell(19).getCellType().equals(CellType.STRING)
+                && row.getCell(3).getCellType().equals(CellType.STRING);
     }
 }
