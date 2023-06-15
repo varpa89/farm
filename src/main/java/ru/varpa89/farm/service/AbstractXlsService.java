@@ -124,4 +124,8 @@ public abstract class AbstractXlsService {
         final BigDecimal result = parseBigDecimal(value);
         return result == null ? null : result.intValue();
     }
+
+    protected static boolean useNds(Sheet sheet, CellAddress address){
+        return getStringValue(sheet,address).contains("Индивидуальный предприниматель Беспятов Сергей Юрьевич");
+    }
 }

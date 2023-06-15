@@ -29,6 +29,7 @@ public class SellService extends AbstractXlsService {
     private static final CellAddress ORDER_DATE = new CellAddress("BB25");
     private static final CellAddress GLN = new CellAddress("BB26");
     private static final CellAddress ADDRESS = new CellAddress("H22");
+    private static final CellAddress INDIVIDUAL_ENTREPRENEUR_INFO = new CellAddress("A7");
 
     private final ClientExtractor clientExtractor;
 
@@ -39,6 +40,8 @@ public class SellService extends AbstractXlsService {
         final String invoiceNumber = getStringValue(sheet, INVOICE_NUMBER);
         final Date invoiceDate = getInvoiceDate(sheet, INVOICE_DATE);
         final String clientInfoValue = getStringValue(sheet, CLIENT_INFO);
+        final boolean useNds = useNds(sheet, INDIVIDUAL_ENTREPRENEUR_INFO);
+        log.info("Use nds: {}", useNds ? "yes" : "no");
 
         final ClientExtractor.ClientInfo clientInfo = clientExtractor.extractInfo(clientInfoValue);
         log.info("Address parsed: {}", clientInfo);
@@ -54,7 +57,10 @@ public class SellService extends AbstractXlsService {
                 .bonus(0)
                 .promo(0)
                 .firm("Мега Опт")
-                .numberSf("")
+                .numberSf(useNds
+                        ? invoiceNumber
+                        : ""
+                )
                 .orderNr(getStringValue(sheet, ORDER_NR))
                 .orderDate(getStringValue(sheet, ORDER_DATE))
                 .gln(getStringValue(sheet, GLN))
@@ -83,17 +89,20 @@ public class SellService extends AbstractXlsService {
             Row row = sheet.getRow(i);
 
             final double lineNumber = row.getCell(0).getNumericCellValue();
-            final double amount = row.getCell(42).getNumericCellValue();
+            final double amount = row.getCell(52).getNumericCellValue();
             final double price = row.getCell(39).getNumericCellValue();
             final String unit = row.getCell(19).getStringCellValue();
             final String name = row.getCell(3).getStringCellValue();
+            final String ndsValue = row.getCell(45).getStringCellValue();
+            final double ndsAmount = row.getCell(48).getNumericCellValue();
+            BigDecimal nds = extractNds(ndsValue);
+            final double priceWithNds = price + price * nds.doubleValue() / 100;
+
 
             //nomenclature - код/артикул
             //plu - пустой
             //factor - сколько единиц в одной коробке - через артикул
             //quantity - столбец (10) количество разделить на factor
-            //SummaNDS - 0
-            // NDS - без ндс
 
             final String nomenclature = row.getCell(16).getStringCellValue();
             final Integer factor = nomenclatureToFactor.get(nomenclature);
@@ -104,7 +113,7 @@ public class SellService extends AbstractXlsService {
 
             final DocumentTablePart documentTablePart = DocumentTablePart.builder()
                     .amount(parseBigDecimal(amount))
-                    .price(parseBigDecimal(price))
+                    .price(parseBigDecimal(priceWithNds))
                     .quantity(parseInteger(quantity))
                     .unit(unit)
                     .name(name)
@@ -113,8 +122,8 @@ public class SellService extends AbstractXlsService {
                     .plu("")
                     .factor(factor)
                     .quantity(quantity)
-                    .nds("Без НДС")
-                    .ndsAmount(BigDecimal.ZERO)
+                    .nds(nds.equals(BigDecimal.ZERO) ? "Без НДС" : nds.toString())
+                    .ndsAmount(BigDecimal.valueOf(ndsAmount))
                     .build();
 
             documentTableParts.add(documentTablePart);
@@ -137,5 +146,13 @@ public class SellService extends AbstractXlsService {
                 && row.getCell(39).getCellType().equals(CellType.NUMERIC)
                 && row.getCell(19).getCellType().equals(CellType.STRING)
                 && row.getCell(3).getCellType().equals(CellType.STRING);
+    }
+
+    private BigDecimal extractNds(String ndsCellValue) {
+        if (ndsCellValue.equals("Без НДС")) {
+            return BigDecimal.ZERO;
+        } else {
+            return BigDecimal.valueOf(Double.parseDouble(ndsCellValue.trim().replace("%", "")));
+        }
     }
 }
