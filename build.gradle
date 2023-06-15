@@ -4,6 +4,10 @@ plugins {
 	id 'java'
 }
 
+tasks.named("jar") {
+	enabled = false
+}
+
 group = 'ru.varpa89'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
