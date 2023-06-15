@@ -1,12 +1,12 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.2.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'org.springframework.boot' version '3.1.0'
+	id 'io.spring.dependency-management' version '1.1.0'
 	id 'java'
 }
 
 group = 'ru.varpa89'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {
@@ -22,8 +22,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.1'
-	implementation 'org.apache.poi:poi-ooxml:4.1.1'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
