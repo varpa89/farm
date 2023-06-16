@@ -95,8 +95,8 @@ public class SellService extends AbstractXlsService {
             final String name = row.getCell(3).getStringCellValue();
             final String ndsValue = row.getCell(45).getStringCellValue();
             final double ndsAmount = row.getCell(48).getNumericCellValue();
-            BigDecimal nds = extractNds(ndsValue);
-            final double priceWithNds = price + price * nds.doubleValue() / 100;
+            Integer nds = extractNds(ndsValue);
+            final double priceWithNds = price + price * nds / 100;
 
 
             //nomenclature - код/артикул
@@ -122,7 +122,7 @@ public class SellService extends AbstractXlsService {
                     .plu("")
                     .factor(factor)
                     .quantity(quantity)
-                    .nds(nds.equals(BigDecimal.ZERO) ? "Без НДС" : nds.toString())
+                    .nds(nds.equals(0) ? "Без НДС" : nds + "%")
                     .ndsAmount(BigDecimal.valueOf(ndsAmount))
                     .build();
 
@@ -148,11 +148,11 @@ public class SellService extends AbstractXlsService {
                 && row.getCell(3).getCellType().equals(CellType.STRING);
     }
 
-    private BigDecimal extractNds(String ndsCellValue) {
+    private Integer extractNds(String ndsCellValue) {
         if (ndsCellValue.equals("Без НДС")) {
-            return BigDecimal.ZERO;
+            return 0;
         } else {
-            return BigDecimal.valueOf(Double.parseDouble(ndsCellValue.trim().replace("%", "")));
+            return Integer.parseInt(ndsCellValue.trim().replace("%", ""));
         }
     }
 }
