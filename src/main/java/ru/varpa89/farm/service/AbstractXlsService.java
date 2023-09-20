@@ -133,3 +133,4 @@ public abstract class AbstractXlsService {
         return getStringValue(sheet,address).contains("Индивидуальный предприниматель Беспятов Сергей Юрьевич");
     }
 }
+
