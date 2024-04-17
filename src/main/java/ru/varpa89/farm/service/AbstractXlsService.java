@@ -106,6 +106,10 @@ public abstract class AbstractXlsService {
         nomenclatureToFactor.put("00717", 4);
         nomenclatureToFactor.put("00745", 9);
         nomenclatureToFactor.put("00749", 4);
+        nomenclatureToFactor.put("00762", 4);
+        nomenclatureToFactor.put("00763", 4);
+        nomenclatureToFactor.put("00764", 4);
+        nomenclatureToFactor.put("00765", 4);
     }
 
 
@@ -139,8 +143,8 @@ public abstract class AbstractXlsService {
         return result == null ? null : result.intValue();
     }
 
-    protected static boolean useNds(Sheet sheet, CellAddress address){
-        return getStringValue(sheet,address).contains("Индивидуальный предприниматель Беспятов Сергей Юрьевич");
+    protected static boolean useNds(Sheet sheet, CellAddress address) {
+        return getStringValue(sheet, address).contains("Индивидуальный предприниматель Беспятов Сергей Юрьевич");
     }
 }
 
