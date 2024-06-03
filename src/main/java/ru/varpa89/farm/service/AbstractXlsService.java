@@ -111,6 +111,7 @@ public abstract class AbstractXlsService {
         nomenclatureToFactor.put("00764", 4);
         nomenclatureToFactor.put("00765", 4);
         nomenclatureToFactor.put("00753", 4);
+        nomenclatureToFactor.put("00720", 4);
     }
 
 
